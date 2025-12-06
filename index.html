@@ -1,31 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Krijn Reijnders</title>
-    <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photography Grid</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 4px;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .block {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .block img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.3s;
+    }
+
+    .label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 2rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      background: rgba(0,0,0,0.3);
+    }
+
+    .block:hover img { opacity: 0.6; }
+    .block:hover .label { opacity: 1; }
+
+    /* --- INSIDE VIEW --- */
+    #insideView {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      padding: 6px;
+      box-sizing: border-box;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    #insideView .cell {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #111;
+      cursor: pointer;
+    }
+
+    #insideView .cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    /* --- FULL VIEW OVERLAY --- */
+    #fullViewOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 20000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #fullViewOverlay img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 10px;
+    }
+
+    #fullViewOverlay #closeFull {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    #closeBtn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 10000;
+    }
+  </style>
 </head>
-
 <body>
-    <div class="container">
-        <div id="nav-placeholder"></div>
-        <main>
-            <h1>Krĳn Reĳnders</h1>
-            <br><br>
-            <p>This is my photography website.</p>
-        </main>
-    </div>
-    <script>
-        fetch('sidebar.html')
-          .then(response => response.text())
-          .then(data => {
-            document.getElementById('nav-placeholder').innerHTML = data;
-          })
-          .catch(error => console.error('Error loading nav:', error));
-      </script>
-</body>
 
+  <div class="block" id="B1"><img /><div class="label">Colombia</div></div>
+  <div class="block" id="B2"><img /><div class="label">Birds</div></div>
+  <div class="block" id="B3"><img /><div class="label">Landscapes</div></div>
+  <div class="block" id="B4"><img /><div class="label">Travel</div></div>
+  <div class="block" id="B5"><img /><div class="label">Portraits</div></div>
+  <div class="block" id="B6"><img /><div class="label">Cities</div></div>
+  <div class="block" id="B7"><img /><div class="label">Nature</div></div>
+  <div class="block" id="B8"><img /><div class="label">Street</div></div>
+  <div class="block" id="B9"><img /><div class="label">Water</div></div>
+
+  <div id="insideView"></div>
+
+  <div id="fullViewOverlay">
+    <div id="closeFull">X</div>
+    <img id="fullImg" />
+  </div>
+
+  <script>
+    const folders = {
+      B1: 'folder_1', B2: 'folder_2', B3: 'folder_3',
+      B4: 'folder_4', B5: 'folder_5', B6: 'folder_6',
+      B7: 'folder_7', B8: 'folder_8', B9: 'folder_9'
+    };
+
+    const blocks = document.querySelectorAll('.block');
+    const insideView = document.getElementById('insideView');
+    const fullOverlay = document.getElementById('fullViewOverlay');
+    const fullImg = document.getElementById('fullImg');
+    const closeFull = document.getElementById('closeFull');
+
+    function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
+    function setMainVisible(v) {
+      document.querySelectorAll('.block').forEach(b => b.style.visibility = v ? 'visible' : 'hidden');
+    }
+
+    function loadRandomImage(blockId) {
+      const folder = folders[blockId];
+      fetch(`${folder}/index.json`)
+        .then(r => r.json())
+        .then(list => {
+          const img = document.querySelector(`#${blockId} img`);
+          img.src = `${folder}/` + shuffle([...list])[0];
+        });
+    }
+
+    Object.keys(folders).forEach(loadRandomImage);
+
+    function closeInside() {
+      insideView.style.display = 'none';
+      insideView.innerHTML = '';
+      setMainVisible(true);
+      document.body.style.overflow = '';
+    }
+
+    function openFullView(src) {
+      fullImg.src = src;
+      fullOverlay.style.display = 'flex';
+    }
+
+    closeFull.onclick = () => {
+      fullOverlay.style.display = 'none';
+    };
+
+    function openInside(id) {
+      insideView.innerHTML = '';
+
+      const close = document.createElement('div');
+      close.id = 'closeBtn';
+      close.textContent = 'X';
+      insideView.appendChild(close);
+      close.addEventListener('click', closeInside);
+
+      fetch(`${folders[id]}/index.json`)
+        .then(r => r.json())
+        .then(list => {
+          const shuffled = shuffle([...list]);
+          const picks = shuffled.slice(0, Math.min(9, shuffled.length));
+          while (picks.length < 9) picks.push(...shuffled.slice(0, 9 - picks.length));
+
+          insideView.style.display = 'grid';
+
+          for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+
+            const img = document.createElement('img');
+            const src = `${folders[id]}/` + picks[i % picks.length];
+            img.src = src;
+
+            img.addEventListener('click', () => openFullView(src));
+
+            cell.appendChild(img);
+            insideView.appendChild(cell);
+          }
+
+          setMainVisible(false);
+          document.body.style.overflow = 'hidden';
+        });
+    }
+
+    blocks.forEach(block => block.addEventListener('click', () => openInside(block.id)));
+  </script>
+</body>
 </html>
