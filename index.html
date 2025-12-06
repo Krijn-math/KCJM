@@ -83,7 +83,7 @@
       inset: 0;
       background: rgba(0,0,0,0.85);
       z-index: 20000;
-      display: flex;
+      /* display: flex; */
       justify-content: center;
       align-items: center;
     }
@@ -96,13 +96,14 @@
 
     #fullViewOverlay #closeFull {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 10px;
+      left: 10px;
       background: white;
       padding: 6px 12px;
       border-radius: 6px;
       font-size: 20px;
       cursor: pointer;
+      z-index: 20001;
     }
 
     #closeBtn {
@@ -221,6 +222,16 @@
     }
 
     blocks.forEach(block => block.addEventListener('click', () => openInside(block.id)));
-  </script>
+    // ESC close functionality
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (fullOverlay.style.display === 'flex') {
+          closeFull.click();
+        } else if (insideView.style.display === 'grid') {
+          closeInside();
+        }
+      }
+    });
+</script>
 </body>
 </html>
