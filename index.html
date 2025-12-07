@@ -220,6 +220,8 @@
     function closeInside() {
       insideView.style.display = 'none';
       insideView.innerHTML = '';
+
+      // setTimeout(() =>   setMainVisible(true), 500)
       setMainVisible(true);
       document.body.style.overflow = '';
 
@@ -231,10 +233,6 @@
       document.querySelectorAll('.block .label').forEach(img => {
         img.style.opacity = '1';
       });
-
-      // reload thumbnails
-      Object.keys(folders).forEach(loadRandomImage);
-
     }
 
     function openFullView(src) {
