@@ -171,6 +171,58 @@
       transition: opacity 0.4s ease;
       z-index: 5000;
     }
+
+    #fullViewContainer {
+  width: 90vw;
+  height: 90vh;
+  display: grid;
+  grid-template-columns: 2fr 1fr;  /* 2/3 image, 1/3 text */
+  gap: 20px;
+  align-items: center;
+}
+
+#fullLeft {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#fullLeft img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+}
+
+#fullRight {
+  color: white;
+  font-size: 1.1rem;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  line-height: 1.4;
+
+  display: flex;                /* add flexbox */
+  justify-content: center;      /* horizontal centering */
+  align-items: center;          /* vertical centering */
+  text-align: center;           /* center the actual text */
+}
+
+
+#fullRight::-webkit-scrollbar {
+  width: 6px;
+}
+
+#fullRight::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 3px;
+}
+
+/* circular profile picture when showing me.jpg */
+#fullImg.profile {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
   </style>
 </head>
 
@@ -208,8 +260,17 @@
 
   <div id="fullViewOverlay">
     <div id="closeFull">X</div>
-    <img id="fullImg" />
+  
+    <div id="fullViewContainer">
+      <div id="fullLeft">
+        <img id="fullImg" />
+      </div>
+      <div id="fullRight">
+        <pre id="fullText"></pre>
+      </div>
+    </div>
   </div>
+  
 
   <script>
     const folders = {
@@ -219,6 +280,7 @@
     };
 
     const blocks = document.querySelectorAll('.block');
+    const nameblock = document.querySelectorAll('.nameblock');
     const insideView = document.getElementById('insideView');
     const fullOverlay = document.getElementById('fullViewOverlay');
     const fullImg = document.getElementById('fullImg');
@@ -269,13 +331,60 @@
     }
 
     function openFullView(src) {
-      fullImg.src = src;
-      fullOverlay.style.display = 'flex';
-    }
+  fullImg.src = src;
+  fullOverlay.style.display = 'flex';
 
-    closeFull.onclick = () => {
-      fullOverlay.style.display = 'none';
-    };
+  // derive text filename from photo filename
+  const txtSrc = src.replace(/\.[^.]+$/, '.txt');
+
+  // load text file
+  fetch(txtSrc)
+    .then(r => r.ok ? r.text() : '')
+    .then(t => {
+      document.getElementById('fullText').textContent = t || '';
+    })
+    .catch(() => {
+      document.getElementById('fullText').textContent = '';
+    });
+}
+
+function openProfile() {
+  fullImg.src = 'ME/me.jpg';
+
+  // make image circular
+  fullImg.classList.add('profile');
+
+  fullOverlay.style.display = 'flex';
+
+  fetch('ME/me.txt')
+    .then(r => r.ok ? r.text() : '')
+    .then(t => {
+      document.getElementById('fullText').textContent = t || '';
+    })
+    .catch(() => {
+      document.getElementById('fullText').textContent = '';
+    });
+}
+
+
+closeFull.onclick = () => {
+  fullOverlay.style.display = 'none';
+  fullImg.classList.remove('profile');  // remove circle mode
+};
+
+
+// close when clicking anywhere except the image itself or the close button
+fullOverlay.addEventListener('click', (e) => {
+  const clickedOnImage = fullImg.contains(e.target);
+  const clickedOnClose  = closeFull.contains(e.target);
+
+  // if click is NOT on the image and NOT on the close button, close (acts like ESC)
+  if (!clickedOnImage && !clickedOnClose) {
+    closeFull.click();
+  }
+});
+
+
 
     function openInside(id) {
 
@@ -359,6 +468,9 @@
 
 
     blocks.forEach(block => block.addEventListener('click', () => openInside(block.id)));
+
+    nameblock.forEach(block => block.addEventListener('click', () => openProfile()));
+
 
     // ESC close functionality
     document.addEventListener('keydown', (e) => {

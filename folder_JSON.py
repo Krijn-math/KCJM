@@ -13,8 +13,7 @@ folders = [
     "LANDSCAPE",
     "AMAZON",
     "CATS",
-    "GALAPAGOS",
-    "ME"
+    "GALAPAGOS"
 ]
 
 for folder in folders:
