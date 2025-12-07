@@ -103,7 +103,7 @@
       object-fit: cover;
       display: block;
       opacity: 0;
-      transition: opacity 0.5s ease;
+      transition: opacity 1s ease;
     }
 
 
@@ -228,6 +228,10 @@
         img.style.opacity = '1';
       });
 
+      document.querySelectorAll('.block .label').forEach(img => {
+        img.style.opacity = '1';
+      });
+
       // reload thumbnails
       Object.keys(folders).forEach(loadRandomImage);
 
@@ -247,6 +251,10 @@
     const clickedThumb = document.querySelector(`#${id} img`).src;
 
     document.querySelectorAll('.block img').forEach(img => {
+      img.style.opacity = (img.src === clickedThumb) ? '1' : '0';
+    });
+
+    document.querySelectorAll('.block .label').forEach(img => {
       img.style.opacity = (img.src === clickedThumb) ? '1' : '0';
     });
 
