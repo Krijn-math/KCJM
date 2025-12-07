@@ -3,8 +3,20 @@ import json
 
 base = "."  # directory where folder_1 … folder_9 live
 
-for i in range(1, 10):
-    folder = f"folder_{i}"
+folders = [
+    "AD",
+    "INDIA",
+    "NIMMA",
+    "ART",
+    "BIRDS",
+    "COLOMBIA",
+    "LANDSCAPE",
+    "AMAZON",
+    "CATS",
+    "GALAPAGOS"
+]
+
+for folder in folders:
     path = os.path.join(base, folder)
 
     if not os.path.isdir(path):

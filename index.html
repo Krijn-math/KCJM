@@ -125,7 +125,7 @@
       top: 10px;
       left: 10px;
       background: white;
-      opacity: 30%;
+      opacity: 50%;
       padding: 6px 12px;
       border-radius: 2px;
       font-size: 20px;
@@ -137,14 +137,14 @@
 <body>
 
   <div class="block" id="B1"><img /><div class="label">Colombia</div></div>
-  <div class="block" id="B2"><img /><div class="label">Birds</div></div>
-  <div class="block" id="B3"><img /><div class="label">Summer (2025)</div></div>
-  <div class="block" id="B4"><img /><div class="label">Amazon</div></div>
-  <div class="block" id="B5"><img /><div class="label">KCJM</div></div>
-  <div class="block" id="B6"><img /><div class="label">Galapagos</div></div>
-  <div class="block" id="B7"><img /><div class="label">India</div></div>
-  <div class="block" id="B8"><img /><div class="label">Spring (2023)</div></div>
-  <div class="block" id="B9"><img /><div class="label">Louvre (AD)</div></div>
+  <div class="block" id="B2"><img /><div class="label">Galapagos</div></div>
+  <div class="block" id="B3"><img /><div class="label">Amazon</div></div>
+  <div class="block" id="B4"><img /><div class="label">Birds</div></div>
+  <div class="block" id="B5"><img /><div class="label">K. C. J. M. </div></div>
+  <div class="block" id="B6"><img /><div class="label">India</div></div>
+  <div class="block" id="B7"><img /><div class="label">Cats</div></div>
+  <div class="block" id="B8"><img /><div class="label">Nimma</div></div>
+  <div class="block" id="B9"><img /><div class="label">Art</div></div>
 
   <div id="insideView"></div>
 
@@ -155,9 +155,9 @@
 
   <script>
     const folders = {
-      B1: 'folder_1', B2: 'folder_2', B3: 'folder_3',
-      B4: 'folder_4', B5: 'folder_5', B6: 'folder_6',
-      B7: 'folder_7', B8: 'folder_8', B9: 'folder_9'
+      B1: 'COLOMBIA', B2: 'GALAPAGOS', B3: 'AMAZON',
+      B4: 'BIRDS', B5: 'AD', B6: 'INDIA',
+      B7: 'CATS', B8: 'NIMMA', B9: 'ART'
     };
 
     const blocks = document.querySelectorAll('.block');
@@ -177,7 +177,7 @@
         .then(r => r.json())
         .then(list => {
           const img = document.querySelector(`#${blockId} img`);
-          img.src = `${folder}/` + shuffle([...list])[0];
+          img.src = `${folder}/thumbs/` + shuffle([...list])[0];
         });
     }
 
@@ -222,8 +222,12 @@
             cell.className = 'cell';
 
             const img = document.createElement('img');
-            const src = `${folders[id]}/` + picks[i % picks.length];
-            img.src = src;
+            const filename = picks[i % picks.length];
+            const thumbSrc = `${folders[id]}/thumbs/` + filename;
+            const fullSrc  = `${folders[id]}/` + filename;
+
+            img.src = thumbSrc;
+            img.addEventListener('click', () => openFullView(fullSrc));
 
             img.addEventListener('click', () => openFullView(src));
 
