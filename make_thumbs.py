@@ -12,7 +12,8 @@ folders = [
     "LANDSCAPE",
     "AMAZON",
     "CATS",
-    "GALAPAGOS"
+    "GALAPAGOS",
+    "ME"
 ]
 
 THUMB_SIZE = (500, 500)  # adjust if you like

@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KCJM</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
 
   <style>
-
     .montserrat {
-    font-family: "Montserrat", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 450;
-    font-style: normal;
+      font-family: "Montserrat", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 450;
+      font-style: normal;
     }
 
     body {
@@ -26,7 +27,7 @@
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(3, 1fr);
       gap: 4px;
-      background: #000;
+      background: #FFF;
       overflow: hidden;
     }
 
@@ -55,7 +56,7 @@
       height: 100%;
       object-fit: cover;
       transition: opacity 0.3s;
-      opacity: 0.6;
+      opacity: 1;
     }
 
     .label {
@@ -68,19 +69,24 @@
       font-size: 2rem;
       opacity: 0;
       transition: opacity 0.3s;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0, 0, 0, 0.3);
       opacity: 1;
     }
 
-    .block:hover img { opacity: 1; }
-    .block:hover .label { opacity: 0; }
+    .block:hover img {
+      opacity: 1;
+    }
+
+    .block:hover .label {
+      opacity: 0;
+    }
 
     /* --- INSIDE VIEW --- */
     #insideView {
       display: none;
       position: fixed;
       inset: 0;
-      background: #000;
+      background: #FFF;
       z-index: 9999;
       padding: 0px;
       box-sizing: border-box;
@@ -92,8 +98,8 @@
     #insideView .cell {
       position: relative;
       overflow: hidden;
-      border-radius: 10px;
-      background: #111;
+      border-radius: 2px;
+      background: #FFF;
       cursor: pointer;
     }
 
@@ -117,7 +123,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0, 0, 0, 0.85);
       z-index: 20000;
       /* display: flex; */
       justify-content: center;
@@ -156,29 +162,47 @@
       z-index: 10000;
     }
 
-      #mainGridFader {
-    position: fixed;
-    inset: 0;
-    background: black;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-    z-index: 5000;
-  }
-
+    #mainGridFader {
+      position: fixed;
+      inset: 0;
+      background: black;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 5000;
+    }
   </style>
 </head>
+
 <body>
 
-  <div class="block" id="B1"><img /><div class="label">Colombia</div></div>
-  <div class="block" id="B2"><img /><div class="label">Galapagos</div></div>
-  <div class="block" id="B3"><img /><div class="label">Amazon</div></div>
-  <div class="block" id="B4"><img /><div class="label">Birds</div></div>
-  <div class="nameblock" id="B5"><img /><div class="label">K. C. J. M. </div></div>
-  <div class="block" id="B6"><img /><div class="label">India</div></div>
-  <div class="block" id="B7"><img /><div class="label">Cats</div></div>
-  <div class="block" id="B8"><img /><div class="label">Nimma</div></div>
-  <div class="block" id="B9"><img /><div class="label">Art</div></div>
+  <div class="block" id="B1"><img />
+    <div class="label">Colombia</div>
+  </div>
+  <div class="block" id="B2"><img />
+    <div class="label">Galapagos</div>
+  </div>
+  <div class="block" id="B3"><img />
+    <div class="label">Amazon</div>
+  </div>
+  <div class="block" id="B4"><img />
+    <div class="label">Birds</div>
+  </div>
+  <div class="nameblock" id="B5"><img />
+    <div class="label">K. C. J. M. </div>
+  </div>
+  <div class="block" id="B6"><img />
+    <div class="label">India</div>
+  </div>
+  <div class="block" id="B7"><img />
+    <div class="label">Cats</div>
+  </div>
+  <div class="block" id="B8"><img />
+    <div class="label">Nimma</div>
+  </div>
+  <div class="block" id="B9"><img />
+    <div class="label">Art</div>
+  </div>
 
   <div id="insideView"></div>
 
@@ -230,10 +254,18 @@
         img.style.opacity = '';
       });
 
-        document.querySelectorAll('.block .label').forEach(label => {
-    label.style.opacity = '';   // allow CSS to control it again
-  });
-  
+      document.querySelectorAll('.block .label').forEach(label => {
+        label.style.opacity = '';   // allow CSS to control it again
+      });
+
+      document.querySelectorAll('.nameblock img').forEach(img => {
+        img.style.opacity = '';
+      });
+
+      document.querySelectorAll('.nameblock .label').forEach(label => {
+        label.style.opacity = '';   // allow CSS to control it again
+      });
+
     }
 
     function openFullView(src) {
@@ -247,75 +279,83 @@
 
     function openInside(id) {
 
-    const clickedThumb = document.querySelector(`#${id} img`).src;
+      const clickedThumb = document.querySelector(`#${id} img`).src;
 
-    document.querySelectorAll('.block img').forEach(img => {
-      img.style.opacity = (img.src === clickedThumb) ? '1' : '0';
-    });
+      document.querySelectorAll('.block img').forEach(img => {
+        img.style.opacity = (img.src === clickedThumb) ? '1' : '0';
+      });
 
-    document.querySelectorAll('.block .label').forEach(img => {
-      img.style.opacity = (img.src === clickedThumb) ? '1' : '0';
-    });
+      document.querySelectorAll('.block .label').forEach(img => {
+        img.style.opacity = (img.src === clickedThumb) ? '1' : '0';
+      });
 
-    setTimeout(() => loadInsideGrid(id, clickedThumb), 500);
+      document.querySelectorAll('.nameblock img').forEach(img => {
+        img.style.opacity = (img.src === clickedThumb) ? '1' : '0';
+      });
+
+      document.querySelectorAll('.nameblock .label').forEach(img => {
+        img.style.opacity = (img.src === clickedThumb) ? '1' : '0';
+      });
+
+      setTimeout(() => loadInsideGrid(id, clickedThumb), 500);
     }
 
 
-function loadInsideGrid(id, clickedThumb) {
+    function loadInsideGrid(id, clickedThumb) {
 
-insideView.innerHTML = '';
+      insideView.innerHTML = '';
 
-const close = document.createElement('div');
-close.id = 'closeBtn';
-close.textContent = 'X';
-close.addEventListener('click', closeInside);
-insideView.appendChild(close);
+      const close = document.createElement('div');
+      close.id = 'closeBtn';
+      close.textContent = 'X';
+      close.addEventListener('click', closeInside);
+      insideView.appendChild(close);
 
-fetch(`${folders[id]}/index.json`)
-  .then(r => r.json())
-  .then(list => {
+      fetch(`${folders[id]}/index.json`)
+        .then(r => r.json())
+        .then(list => {
 
-    const shuffled = shuffle([...list]);
-    const picks = shuffled.slice(0, Math.min(8, shuffled.length));
+          const shuffled = shuffle([...list]);
+          const picks = shuffled.slice(0, Math.min(8, shuffled.length));
 
-    const order = ['B1','B2','B3','B4','B5','B6','B7','B8','B9'];
+          const order = ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9'];
 
-    const finalArr = Array(9);
-    const clickedIndex = order.indexOf(id);
+          const finalArr = Array(9);
+          const clickedIndex = order.indexOf(id);
 
-    const clickedFull = clickedThumb.replace('/thumbs/', '/');
-    finalArr[clickedIndex] = clickedFull;
+          const clickedFull = clickedThumb.replace('/thumbs/', '/');
+          finalArr[clickedIndex] = clickedFull;
 
-    let p = 0;
-    for (let i = 0; i < 9; i++) {
-      if (i !== clickedIndex) {
-        finalArr[i] = `${folders[id]}/` + picks[p++ % picks.length];
-      }
+          let p = 0;
+          for (let i = 0; i < 9; i++) {
+            if (i !== clickedIndex) {
+              finalArr[i] = `${folders[id]}/` + picks[p++ % picks.length];
+            }
+          }
+
+          insideView.style.display = 'grid';
+
+          finalArr.forEach(src => {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+
+            const img = document.createElement('img');
+            img.src = src.includes('/thumbs/')
+              ? src
+              : src.replace(`${folders[id]}/`, `${folders[id]}/thumbs/`);
+
+            img.onload = () => img.classList.add('loaded');
+
+            img.addEventListener('click', () => openFullView(src));
+
+            cell.appendChild(img);
+            insideView.appendChild(cell);
+          });
+
+          setMainVisible(false);
+          document.body.style.overflow = 'hidden';
+        });
     }
-
-    insideView.style.display = 'grid';
-
-    finalArr.forEach(src => {
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-
-      const img = document.createElement('img');
-      img.src = src.includes('/thumbs/')
-        ? src
-        : src.replace(`${folders[id]}/`, `${folders[id]}/thumbs/`);
-
-      img.onload = () => img.classList.add('loaded');
-
-      img.addEventListener('click', () => openFullView(src));
-
-      cell.appendChild(img);
-      insideView.appendChild(cell);
-    });
-
-    setMainVisible(false);
-    document.body.style.overflow = 'hidden';
-  });
-}
 
 
     blocks.forEach(block => block.addEventListener('click', () => openInside(block.id)));
@@ -330,6 +370,7 @@ fetch(`${folders[id]}/index.json`)
         }
       }
     });
-</script>
+  </script>
 </body>
+
 </html>
