@@ -40,7 +40,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.5s ease;
       opacity: 0.6;
     }
 
@@ -82,11 +82,11 @@
       inset: 0;
       background: #000;
       z-index: 9999;
-      padding: 6px;
+      padding: 0px;
       box-sizing: border-box;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      gap: 6px;
+      gap: 4px;
     }
 
     #insideView .cell {
@@ -102,8 +102,15 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform 0.3s ease;
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
+
+
+    #insideView .cell img.loaded {
+      opacity: 1;
+    }
+
 
     /* --- FULL VIEW OVERLAY --- */
     #fullViewOverlay {
@@ -148,6 +155,17 @@
       cursor: pointer;
       z-index: 10000;
     }
+
+      #mainGridFader {
+    position: fixed;
+    inset: 0;
+    background: black;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 5000;
+  }
+
   </style>
 </head>
 <body>
@@ -204,6 +222,15 @@
       insideView.innerHTML = '';
       setMainVisible(true);
       document.body.style.overflow = '';
+
+      // restore all main images full opacity
+      document.querySelectorAll('.block img').forEach(img => {
+        img.style.opacity = '1';
+      });
+
+      // reload thumbnails
+      Object.keys(folders).forEach(loadRandomImage);
+
     }
 
     function openFullView(src) {
@@ -216,45 +243,73 @@
     };
 
     function openInside(id) {
-      insideView.innerHTML = '';
 
-      const close = document.createElement('div');
-      close.id = 'closeBtn';
-      close.textContent = 'X';
-      insideView.appendChild(close);
-      close.addEventListener('click', closeInside);
+    const clickedThumb = document.querySelector(`#${id} img`).src;
 
-      fetch(`${folders[id]}/index.json`)
-        .then(r => r.json())
-        .then(list => {
-          const shuffled = shuffle([...list]);
-          const picks = shuffled.slice(0, Math.min(9, shuffled.length));
-          while (picks.length < 9) picks.push(...shuffled.slice(0, 9 - picks.length));
+    document.querySelectorAll('.block img').forEach(img => {
+      img.style.opacity = (img.src === clickedThumb) ? '1' : '0';
+    });
 
-          insideView.style.display = 'grid';
-
-          for (let i = 0; i < 9; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-
-            const img = document.createElement('img');
-            const filename = picks[i % picks.length];
-            const thumbSrc = `${folders[id]}/thumbs/` + filename;
-            const fullSrc  = `${folders[id]}/` + filename;
-
-            img.src = thumbSrc;
-            img.addEventListener('click', () => openFullView(fullSrc));
-
-            img.addEventListener('click', () => openFullView(src));
-
-            cell.appendChild(img);
-            insideView.appendChild(cell);
-          }
-
-          setMainVisible(false);
-          document.body.style.overflow = 'hidden';
-        });
+    setTimeout(() => loadInsideGrid(id, clickedThumb), 500);
     }
+
+
+function loadInsideGrid(id, clickedThumb) {
+
+insideView.innerHTML = '';
+
+const close = document.createElement('div');
+close.id = 'closeBtn';
+close.textContent = 'X';
+close.addEventListener('click', closeInside);
+insideView.appendChild(close);
+
+fetch(`${folders[id]}/index.json`)
+  .then(r => r.json())
+  .then(list => {
+
+    const shuffled = shuffle([...list]);
+    const picks = shuffled.slice(0, Math.min(8, shuffled.length));
+
+    const order = ['B1','B2','B3','B4','B5','B6','B7','B8','B9'];
+
+    const finalArr = Array(9);
+    const clickedIndex = order.indexOf(id);
+
+    const clickedFull = clickedThumb.replace('/thumbs/', '/');
+    finalArr[clickedIndex] = clickedFull;
+
+    let p = 0;
+    for (let i = 0; i < 9; i++) {
+      if (i !== clickedIndex) {
+        finalArr[i] = `${folders[id]}/` + picks[p++ % picks.length];
+      }
+    }
+
+    insideView.style.display = 'grid';
+
+    finalArr.forEach(src => {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+
+      const img = document.createElement('img');
+      img.src = src.includes('/thumbs/')
+        ? src
+        : src.replace(`${folders[id]}/`, `${folders[id]}/thumbs/`);
+
+      img.onload = () => img.classList.add('loaded');
+
+      img.addEventListener('click', () => openFullView(src));
+
+      cell.appendChild(img);
+      insideView.appendChild(cell);
+    });
+
+    setMainVisible(false);
+    document.body.style.overflow = 'hidden';
+  });
+}
+
 
     blocks.forEach(block => block.addEventListener('click', () => openInside(block.id)));
 
