@@ -26,6 +26,7 @@ for folder in folders:
         f for f in os.listdir(path)
         if os.path.isfile(os.path.join(path, f))
            and not f.endswith(".json")
+           and not f.endswith(".txt")
            and not f.startswith(".")
     ]
 

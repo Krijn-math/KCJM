@@ -29,6 +29,8 @@ for folder in folders:
             continue
         if filename.lower().endswith(".json"):
             continue
+        if filename.lower().endswith(".txt"):
+            continue
 
         # Skip if thumbnail already exists
         thumb_path = os.path.join(thumbs_dir, filename)
