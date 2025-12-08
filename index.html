@@ -194,6 +194,9 @@
   max-width: 90%;
   max-height: 90%;
   border-radius: 8px;
+
+  cursor: pointer;
+
 }
 
 #fullRight {
@@ -353,6 +356,11 @@
       document.getElementById('fullText').textContent = '';
     });
 }
+
+fullImg.addEventListener('click', (e) => {
+  e.stopPropagation();                    // prevent the overlay from closing
+  window.open(fullImg.src, '_blank');     // open image in new tab
+});
 
 function openProfile() {
   fullImg.src = 'ME/me.jpg';
