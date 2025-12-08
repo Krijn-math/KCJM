@@ -196,15 +196,17 @@
 
 #fullRight {
   color: white;
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 1.2vw, 1.4rem);  /* auto-resize */
   overflow-y: auto;
-  white-space: pre-wrap;
+  white-space: pre-wrap;                      /* reflow text properly */
   line-height: 1.4;
+  padding: 50px;
 
   display: flex;                /* add flexbox */
   justify-content: center;      /* horizontal centering */
   align-items: center;          /* vertical centering */
-  text-align: center;           /* center the actual text */
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 
@@ -267,7 +269,7 @@
         <img id="fullImg" />
       </div>
       <div id="fullRight">
-        <pre id="fullText"></pre>
+        <div id="fullText"></div>
       </div>
     </div>
   </div>
