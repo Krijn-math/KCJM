@@ -292,6 +292,7 @@
     const nameblock = document.querySelectorAll('.nameblock');
     const insideView = document.getElementById('insideView');
     const fullOverlay = document.getElementById('fullViewOverlay');
+    const fullContainer = document.getElementById('fullViewContainer');
     const fullImg = document.getElementById('fullImg');
     const closeFull = document.getElementById('closeFull');
 
@@ -363,12 +364,14 @@ fullImg.addEventListener('click', (e) => {
 });
 
 function openProfile() {
-  fullImg.src = 'ME/me.jpg';
-
+  fullContainer.style.gridTemplateColumns = "40fr 20fr 10fr";
+  
   // make image circular
+  fullImg.src = 'ME/me.jpg'; 
   fullImg.classList.add('profile');
 
   fullOverlay.style.display = 'flex';
+  
 
   fetch('ME/me.txt')
     .then(r => r.ok ? r.text() : '')
@@ -383,6 +386,7 @@ function openProfile() {
 
 closeFull.onclick = () => {
   fullOverlay.style.display = 'none';
+  fullContainer.style.gridTemplateColumns = '';
   fullImg.classList.remove('profile');  // remove circle mode
 };
 
