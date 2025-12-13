@@ -351,6 +351,9 @@
   fetch(txtSrc)
     .then(r => r.ok ? r.text() : '')
     .then(t => {
+      if (t == ''){
+        fullContainer.style.gridTemplateColumns = "40fr 0fr 0fr";
+      }
       document.getElementById('fullText').textContent = t || '';
     })
     .catch(() => {
