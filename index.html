@@ -174,63 +174,67 @@
     }
 
     #fullViewContainer {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: 20fr 10fr 1fr;  /* 2/3 image, 1/3 text */
-  gap: 20px;
-  align-items: center;
-}
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 20fr 10fr 1fr;
+      /* 2/3 image, 1/3 text */
+      gap: 20px;
+      align-items: center;
+    }
 
 
 
-#fullLeft {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    #fullLeft {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-#fullLeft img {
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 8px;
+    #fullLeft img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 8px;
 
-  cursor: pointer;
+      cursor: pointer;
 
-}
+    }
 
-#fullRight {
-  color: white;
-  font-size: clamp(0.9rem, 1.2vw, 1rem);  /* auto-resize */
-  overflow-y: auto;
-  white-space: pre-wrap;                      /* reflow text properly */
-  line-height: 1.4;
-  padding: 20px;
+    #fullRight {
+      color: white;
+      font-size: clamp(0.9rem, 1.2vw, 1rem);
+      /* auto-resize */
+      overflow-y: auto;
+      white-space: pre-wrap;
+      /* reflow text properly */
+      line-height: 1.4;
+      padding: 20px;
 
-  display: flex;                /* add flexbox */
-  justify-content: center;      /* horizontal centering */
-  align-items: center;          /* vertical centering */
-  text-align: justify;
-  text-justify: inter-word;
-}
-
-
-#fullRight::-webkit-scrollbar {
-  width: 6px;
-}
-
-#fullRight::-webkit-scrollbar-thumb {
-  background: #444;
-  border-radius: 3px;
-}
-
-/* circular profile picture when showing me.jpg */
-#fullImg.profile {
-  border-radius: 50%;
-  object-fit: cover;
-}
+      display: flex;
+      /* add flexbox */
+      justify-content: center;
+      /* horizontal centering */
+      align-items: center;
+      /* vertical centering */
+      text-align: justify;
+      text-justify: inter-word;
+    }
 
 
+    #fullRight::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #fullRight::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 3px;
+    }
+
+    /* circular profile picture when showing me.jpg */
+    #fullImg.profile {
+      border-radius: 50%;
+      object-fit: cover;
+    }
   </style>
 </head>
 
@@ -268,7 +272,7 @@
 
   <div id="fullViewOverlay">
     <div id="closeFull">X</div>
-  
+
     <div id="fullViewContainer">
       <div id="fullLeft">
         <img id="fullImg" />
@@ -279,7 +283,7 @@
       <div></div>
     </div>
   </div>
-  
+
 
   <script>
     const folders = {
@@ -295,6 +299,8 @@
     const fullContainer = document.getElementById('fullViewContainer');
     const fullImg = document.getElementById('fullImg');
     const closeFull = document.getElementById('closeFull');
+
+    let viewState = 'main'; // 'main' | 'inside' | 'full'
 
     function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
     function setMainVisible(v) {
@@ -341,73 +347,85 @@
     }
 
     function openFullView(src) {
-  fullImg.src = src;
-  fullOverlay.style.display = 'flex';
+      history.pushState({ view: 'full' }, '');
+      viewState = 'full';
 
-  // derive text filename from photo filename
-  const txtSrc = src.replace(/\.[^.]+$/, '.txt');
+      fullImg.classList.remove('profile');
+      fullImg.src = src;
+      fullOverlay.style.display = 'flex';
 
-  // load text file
-  fetch(txtSrc)
-    .then(r => r.ok ? r.text() : '')
-    .then(t => {
-      if (t == ''){
-        fullContainer.style.gridTemplateColumns = "40fr 0fr 0fr";
+      // derive text filename from photo filename
+      const txtSrc = src.replace(/\.[^.]+$/, '.txt');
+
+      // load text file
+      fetch(txtSrc)
+        .then(r => r.ok ? r.text() : '')
+        .then(t => {
+          if (t == '') {
+            fullContainer.style.gridTemplateColumns = "40fr 0fr 0fr";
+          }
+          document.getElementById('fullText').textContent = t || '';
+        })
+        .catch(() => {
+          document.getElementById('fullText').textContent = '';
+        });
+    }
+
+    fullImg.addEventListener('click', (e) => {
+      e.stopPropagation();                    // prevent the overlay from closing
+      window.open(fullImg.src, '_blank');     // open image in new tab
+    });
+
+    function openProfile() {
+      history.pushState({ view: 'full' }, '');
+      viewState = 'full';
+
+      fullContainer.style.gridTemplateColumns = "40fr 20fr 10fr";
+
+      // make image circular
+      fullImg.src = 'ME/me.jpg';
+      fullImg.classList.add('profile');
+
+      fullOverlay.style.display = 'flex';
+
+
+      fetch('ME/me.txt')
+        .then(r => r.ok ? r.text() : '')
+        .then(t => {
+          document.getElementById('fullText').textContent = t || '';
+        })
+        .catch(() => {
+          document.getElementById('fullText').textContent = '';
+        });
+    }
+
+
+    // closeFull.onclick = () => {
+    //   fullOverlay.style.display = 'none';
+    //   fullContainer.style.gridTemplateColumns = '';
+    //   fullImg.classList.remove('profile');  // remove circle mode
+    // };
+
+    closeFull.onclick = () => history.back();
+
+
+    // close when clicking anywhere except the image itself or the close button
+    fullOverlay.addEventListener('click', (e) => {
+      const clickedOnImage = fullImg.contains(e.target);
+      const clickedOnClose = closeFull.contains(e.target);
+
+      // if click is NOT on the image and NOT on the close button, close (acts like ESC)
+      if (!clickedOnImage && !clickedOnClose) {
+        closeFull.click();
       }
-      document.getElementById('fullText').textContent = t || '';
-    })
-    .catch(() => {
-      document.getElementById('fullText').textContent = '';
     });
-}
-
-fullImg.addEventListener('click', (e) => {
-  e.stopPropagation();                    // prevent the overlay from closing
-  window.open(fullImg.src, '_blank');     // open image in new tab
-});
-
-function openProfile() {
-  fullContainer.style.gridTemplateColumns = "40fr 20fr 10fr";
-  
-  // make image circular
-  fullImg.src = 'ME/me.jpg'; 
-  fullImg.classList.add('profile');
-
-  fullOverlay.style.display = 'flex';
-  
-
-  fetch('ME/me.txt')
-    .then(r => r.ok ? r.text() : '')
-    .then(t => {
-      document.getElementById('fullText').textContent = t || '';
-    })
-    .catch(() => {
-      document.getElementById('fullText').textContent = '';
-    });
-}
-
-
-closeFull.onclick = () => {
-  fullOverlay.style.display = 'none';
-  fullContainer.style.gridTemplateColumns = '';
-  fullImg.classList.remove('profile');  // remove circle mode
-};
-
-
-// close when clicking anywhere except the image itself or the close button
-fullOverlay.addEventListener('click', (e) => {
-  const clickedOnImage = fullImg.contains(e.target);
-  const clickedOnClose  = closeFull.contains(e.target);
-
-  // if click is NOT on the image and NOT on the close button, close (acts like ESC)
-  if (!clickedOnImage && !clickedOnClose) {
-    closeFull.click();
-  }
-});
 
 
 
     function openInside(id) {
+
+      history.pushState({ view: 'inside' }, '');
+      viewState = 'inside';
 
       const clickedThumb = document.querySelector(`#${id} img`).src;
 
@@ -438,7 +456,8 @@ fullOverlay.addEventListener('click', (e) => {
       const close = document.createElement('div');
       close.id = 'closeBtn';
       close.textContent = 'X';
-      close.addEventListener('click', closeInside);
+      close.addEventListener('click', () => history.back());
+      // close.addEventListener('click', closeInside);
       insideView.appendChild(close);
 
       fetch(`${folders[id]}/index.json`)
@@ -487,22 +506,57 @@ fullOverlay.addEventListener('click', (e) => {
         });
     }
 
+    function goBackOne() {
+      if (viewState === 'full') {
+        closeFull.click();
+        viewState = 'inside';
+      } else if (viewState === 'inside') {
+        closeInside();
+        viewState = 'main';
+      }
+    }
+
+
 
     blocks.forEach(block => block.addEventListener('click', () => openInside(block.id)));
 
     nameblock.forEach(block => block.addEventListener('click', () => openProfile()));
 
 
-    // ESC close functionality
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (fullOverlay.style.display === 'flex') {
-          closeFull.click();
-        } else if (insideView.style.display === 'grid') {
-          closeInside();
-        }
+
+    window.addEventListener('popstate', () => {
+      // Full view always has priority
+      if (fullOverlay.style.display === 'flex') {
+        fullOverlay.style.display = 'none';
+        return;
+      }
+
+      // Then inside view
+      if (insideView.style.display === 'grid') {
+        closeInside();
+        return;
       }
     });
+
+
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+
+      // If nothing is open, ESC should do nothing
+      if (
+        fullOverlay.style.display !== 'flex' &&
+        insideView.style.display !== 'grid'
+      ) {
+        return;
+      }
+
+      history.back();
+    });
+
+
+
+
   </script>
 </body>
 
